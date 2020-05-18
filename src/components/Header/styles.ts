@@ -23,6 +23,11 @@ export const Container = styled.div<ContainerProps>`
         font-size: 16px;
         transition: opacity 0.2s;
 
+        svg {
+          margin-top: 1px;
+          margin-right: 7px;
+        }
+
         & + a {
           margin-left: 32px;
         }

@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-
-import filesize from 'filesize';
-
-import Header from '../../components/Header';
-import FileList from '../../components/FileList';
-import Upload from '../../components/Upload';
-
-import { Container, Title, ImportFileContainer, Footer } from './styles';
-
+import Swal from 'sweetalert2';
 import alert from '../../assets/alert.svg';
+import FileList from '../../components/FileList';
+import Header from '../../components/Header';
+import Upload from '../../components/Upload';
 import api from '../../services/api';
+import { Container, Footer, ImportFileContainer, Title } from './styles';
 
 interface FileProps {
   file: File;
@@ -21,21 +17,42 @@ interface FileProps {
 const Import: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<FileProps[]>([]);
   const history = useHistory();
-
   async function handleUpload(): Promise<void> {
-    // const data = new FormData();
+    const data = new FormData();
 
-    // TODO
+    if (!uploadedFiles.length) return;
+
+    data.append('file', uploadedFiles[0].file);
 
     try {
-      // await api.post('/transactions/import', data);
+      await api.post('/transactions/import', data);
+      Swal.fire({
+        icon: 'success',
+        title: 'Você enviou os arquivos com sucesso!',
+        text: 'Tudo certo por aqui.',
+        confirmButtonColor: '#ff813f',
+        onDestroy: () => {
+          history.goBack();
+        },
+      });
     } catch (err) {
-      // console.log(err.response.error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Um erro ocorreu!',
+        text: 'Tente novamente',
+        confirmButtonColor: '#f8355e',
+      });
     }
   }
 
   function submitFile(files: File[]): void {
-    // TODO
+    const filesToUpload = files.map(file => ({
+      file,
+      name: file.name,
+      readableSize: String(file.size),
+    }));
+
+    setUploadedFiles(filesToUpload);
   }
 
   return (
